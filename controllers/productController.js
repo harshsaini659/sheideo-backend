@@ -5,7 +5,7 @@ exports.createProduct = async (req, res) => {
 
   try{
     if (req.user.role !== 'seller') {
-      return res.status(403).json({ message: 'Only sellers can add products' });
+      return res.status(403).json({ message: 'Only sellers can add products' })
     }
 
     const product = new Product({
@@ -19,7 +19,7 @@ exports.createProduct = async (req, res) => {
     })
 
     await product.save()
-    res.status(201).json({ message: 'Product created', product });
+    res.status(201).json({ message: 'Product created', product })
   }catch (err) {
     console.error(err)
     res.status(500).json({ message: 'Server error' })
@@ -28,10 +28,36 @@ exports.createProduct = async (req, res) => {
 
 exports.getMyProducts = async (req, res) => {
   try {
-    const products = await Product.find({ seller: req.user._id });
-    res.status(200).json(products);
+    const products = await Product.find({ seller: req.user._id })
+    res.status(200).json(products)
   } catch (err) {
-    console.error("Error fetching seller's products:", err.message);
-    res.status(500).json({ message: "Server error" });
+    console.error("Error fetching seller's products:", err.message)
+    res.status(500).json({ message: "Server error" })
   }
-};
+}
+
+exports.updateProduct = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id)
+
+    if (!product) return res.status(404).json({ message: "Product not found" })
+
+    // Ensure the logged-in seller is the owner
+    if (product.seller.toString() !== req.user._id.toString()) {
+      return res.status(401).json({ message: "Unauthorized to update this product" })
+    }
+
+    // Update fields
+    product.title = req.body.title || product.title
+    product.description = req.body.description || product.description
+    product.price = req.body.price || product.price
+    product.images = req.body.images || product.images
+
+    const updatedProduct = await product.save()
+    res.status(200).json(updatedProduct)
+
+  } catch (err) {
+    console.error("Error updating product:", err.message)
+    res.status(500).json({ message: "Server error" })
+  }
+}
