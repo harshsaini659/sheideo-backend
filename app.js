@@ -5,12 +5,14 @@ const dotenv = require('dotenv')
 dotenv.config()
 const connectDB = require('./config/db')
 connectDB()
+const authRoutes = require('./routes/authRoutes')
 
 const app =express()
 
 app.use(cors())
 app.use(express.json())
 app.use(morgan('dev'))
+app.use('/api/auth', authRoutes)  //router-level middleware
 
 app.get('/',(req,res)=>{
     res.send('Sheideo application is running')
