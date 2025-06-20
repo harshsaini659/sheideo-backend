@@ -10,9 +10,9 @@ const productRoutes = require('./routes/productRoutes')
 
 const app =express()
 
-app.use(cors())
-app.use(express.json())
-app.use(morgan('dev'))
+app.use(cors()) // enable CORS, that is also a middleware
+app.use(express.json()) // body parser middleware
+app.use(morgan('dev')) // logging middleware
 app.use('/api/auth', authRoutes)  //router-level middleware
 app.use('/api/products', productRoutes) //router-level middleware
 

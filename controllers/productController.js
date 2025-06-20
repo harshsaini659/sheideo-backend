@@ -61,3 +61,23 @@ exports.updateProduct = async (req, res) => {
     res.status(500).json({ message: "Server error" })
   }
 }
+
+exports.deleteProduct = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id)
+
+    if (!product)
+      return res.status(404).json({ message: "Product not found" })
+    //Authorization check
+    if (product.seller.toString() !== req.user._id.toString()) {
+      return res.status(401).json({ message: "Unauthorized to delete this product" })
+    }
+
+    await product.deleteOne()
+    res.status(200).json({ message: "Product deleted successfully" })
+
+  } catch (err) {
+    console.error("Error deleting product:", err.message)
+    res.status(500).json({ message: "Server error" })
+  }
+}
