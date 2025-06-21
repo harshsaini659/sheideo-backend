@@ -7,7 +7,7 @@ const protect = async (req, res, next) => {
 
   if (token && token.startsWith('Bearer')) {
     try {
-      token = token.split(' ')[1];
+      token = token.split(' ')[1]
       const decoded = jwt.verify(token, process.env.JWT_SECRET)
       req.user = await User.findById(decoded.id).select('-password')
       next()
@@ -17,6 +17,19 @@ const protect = async (req, res, next) => {
   } else {
     return res.status(401).json({ message: 'No token, authorization denied' })
   }
-};
+}
 
-module.exports = protect
+const isSeller = async (req, res, next) => {
+  await protect(req, res, async () => {
+    if (req.user && req.user.role === "seller") {
+      next()
+    } else {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied! Only sellers allowed",
+      })
+    }
+  })
+}
+
+module.exports = {protect, isSeller}
