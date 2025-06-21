@@ -7,6 +7,7 @@ const connectDB = require('./config/db')
 connectDB()
 const authRoutes = require('./routes/authRoutes')
 const productRoutes = require('./routes/productRoutes')
+const storeRoutes = require('./routes/storeRoutes')
 
 const app =express()
 
@@ -15,6 +16,7 @@ app.use(express.json()) // body parser middleware
 app.use(morgan('dev')) // logging middleware
 app.use('/api/auth', authRoutes)  //router-level middleware
 app.use('/api/products', productRoutes) //router-level middleware
+app.use('/api/seller', storeRoutes) //router-level middleware
 
 app.get('/',(req,res)=>{
     res.send('Sheideo application is running')
